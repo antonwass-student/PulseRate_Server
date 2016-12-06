@@ -1,8 +1,11 @@
+import java.io.Serializable;
+
 /**
  * Created by Anton on 2016-12-06.
  */
 
-public class PlethData {
+
+public class PlethData implements Serializable{
     private long time;
     private int value;
 

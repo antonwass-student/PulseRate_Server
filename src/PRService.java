@@ -3,6 +3,7 @@ import com.sun.xml.internal.ws.policy.privateutil.PolicyUtils;
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
+import java.text.SimpleDateFormat;
 import java.util.Calendar;
 
 /**
@@ -32,25 +33,27 @@ public class PRService {
     }
 
     private void handleClient(Socket socket) throws  IOException{
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd_HH.mm.ss");
 
-        PrintWriter pw = new PrintWriter(new FileWriter(Calendar.getInstance().getTime().toString()));
-        ObjectInputStream objectInputStream = new ObjectInputStream(socket.getInputStream());
+        PrintWriter pw = new PrintWriter(new FileWriter(sdf.format(Calendar.getInstance().getTime()) + ".dat"));
+
+        InputStreamReader inputStreamReader = new InputStreamReader(socket.getInputStream());
+        BufferedReader bufferedReader = new BufferedReader(inputStreamReader);
 
         try {
             System.out.println("Reading from client...");
-            while(true){
-
-                PlethData pd = (PlethData)objectInputStream.readObject();
-                pw.println(pd.getValue()+";"+pd.getTime());
+            String line;
+            while((line = bufferedReader.readLine()) != null){
+                pw.println(line);
                 pw.flush();
             }
         }
-        catch (ClassNotFoundException e) {
+        catch (Exception e) {
             e.printStackTrace();
         }finally {
             //Close streams
             try{
-                objectInputStream.close();
+                bufferedReader.close();
             }catch(Exception e){
                 e.printStackTrace();
             }
